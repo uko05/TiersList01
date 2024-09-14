@@ -1,13 +1,14 @@
-// キャラクター画像ファイル名のリスト
-const characterFiles = [
-    'char1.png',
-    'char2.png',
-    'char3.png' // 追加キャラクターはこのリストに追加
-];
+// ファイルリストを取得する関数
+async function fetchCharacterFiles() {
+    const response = await fetch('filelist.json');
+    const data = await response.json();
+    return data;
+}
 
 // キャラクター画像を表示する関数
-function loadCharacters() {
+async function loadCharacters() {
     const charactersContainer = document.getElementById('characters');
+    const characterFiles = await fetchCharacterFiles();
     
     characterFiles.forEach((file, index) => {
         // div要素を作成
