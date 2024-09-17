@@ -98,7 +98,7 @@ header {
     object-fit: cover;
     cursor: pointer;
     border-radius: 4px; /* 角丸を追加 */
-    border: 2px solid transparent; /* デフォルトのボーダーを透明に */
+    border: 2px solid #ffffff; /* デフォルトのボーダーを透明に */
 }
 
 .image-container {
