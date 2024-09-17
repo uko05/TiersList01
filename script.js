@@ -348,24 +348,22 @@ function loadImages() {
 }
 
 function saveImage() {
-    html2canvas(document.getElementById('grid'), {
-        useCORS: true,
-        backgroundColor: null  // 背景色を設定しない（透過状態を維持）
-    }).then(canvas => {
+    html2canvas(document.getElementById('grid'), { useCORS: true }).then(canvas => {
         canvas.toBlob(function(blob) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             
+            // 現在の日時を「yyyyMMdd_HHmmss」形式にフォーマット
             const now = new Date();
             const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // 月は0から始まるので+1
             const day = String(now.getDate()).padStart(2, '0');
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const seconds = String(now.getSeconds()).padStart(2, '0');
 
             const formattedDate = `${year}${month}${day}_${hours}${minutes}${seconds}`;
-            link.download = `原神推しキャラランキング_${formattedDate}.png`;
+            link.download = `原神推しキャラランキング_${formattedDate}.png`; // ファイル名の変更
             
             link.click();
         }, 'image/png');
