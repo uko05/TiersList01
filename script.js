@@ -351,7 +351,7 @@ function saveImage() {
     html2canvas(document.getElementById('grid'), { 
         useCORS: true, 
         backgroundColor: null,  // 背景色をnullに設定
-        scale: window.devicePixelRatio // 高解像度でキャプチャ
+        scale: 2 // スケールを調整して解像度を上げる
     }).then(canvas => {
         canvas.toBlob(function(blob) {
             const link = document.createElement('a');
