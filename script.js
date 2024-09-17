@@ -357,7 +357,7 @@ function saveImage() {
 
     html2canvas(grid, {
         useCORS: true,
-        backgroundColor: White
+        backgroundColor: #ffffff
     }).then(canvas => {
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
