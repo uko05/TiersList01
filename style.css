@@ -232,43 +232,40 @@ header {
     font-size: 10px;
 }
 
-/* スマホで横画面表示時のスタイル調整 */
-@media only screen and (min-width: 768px) and (orientation: landscape) {
-    .tabs {
-        flex-direction: row;
-        justify-content: center;
-        width: 100%;
+/* スマホの縦画面表示時のスタイル調整 */
+@media only screen and (max-width: 767px) and (orientation: portrait) {
+    .container {
+        grid-template-columns: repeat(3, 1fr); /* 列数を3にする */
+        grid-template-rows: auto repeat(3, 100px); /* 行数を調整 */
     }
 
     .tab-wrap {
+        flex-direction: column; /* タブを縦に並べる */
         width: 100%;
-        max-width: 1000px;
-        margin: 20px auto;
     }
 
     .tab-container {
         width: 100%;
         display: flex;
-        justify-content: center;
+        flex-direction: column; /* タブを縦に並べる */
     }
 
     .tab-label {
-        font-size: 18px;
+        font-size: 14px; /* フォントサイズを小さくする */
     }
 
-    .container {
-        max-width: 100%;
-        margin: 20px auto;
+    .image-list {
+        flex-direction: column; /* 画像を縦に並べる */
+        align-items: center;
+    }
+
+    .image-list img {
+        width: 80px; /* 画像の幅を調整 */
+        height: 80px; /* 画像の高さを調整 */
     }
 
     #save-button {
-        padding: 10px 40px; /* パディングを調整 */
-        font-size: 18px; /* フォントサイズの調整 */
-    }
-
-    #save-button:hover {
-        background-color: #0056b3; /* ホバー時の背景色を変更 */
-        color: #fff; /* ホバー時の文字色を変更 */
-        border-color: #0056b3; /* ホバー時のボーダー色を変更 */
+        padding: 10px 20px; /* パディングを調整 */
+        font-size: 14px; /* フォントサイズを調整 */
     }
 }
