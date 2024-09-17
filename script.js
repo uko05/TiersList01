@@ -348,19 +348,31 @@ function loadImages() {
 }
 
 function saveImage() {
-    html2canvas(document.getElementById('grid'), { useCORS: true }).then(canvas => {
+    html2canvas(document.getElementById('grid'), {
+        useCORS: true,
+        backgroundColor: null  // 背景色を設定しない（透過状態を維持）
+    }).then(canvas => {
         canvas.toBlob(function(blob) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            const timestamp = new Date().toISOString().replace(/[:.-]/g, '_');
-            link.download = `image_${timestamp}.png`;
+            
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const formattedDate = `${year}${month}${day}_${hours}${minutes}${seconds}`;
+            link.download = `原神推しキャラランキング_${formattedDate}.png`;
+            
             link.click();
         }, 'image/png');
     }).catch(error => {
         console.error('Error capturing image:', error);
     });
 }
-
 
 document.addEventListener('DOMContentLoaded', loadImages);
 
