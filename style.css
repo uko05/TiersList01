@@ -126,6 +126,10 @@ header {
     max-height: 100%;
 }
 
+#grid {
+    background-color: transparent;
+}
+
 .tab-wrap {
     display: flex;
     flex-wrap: wrap;

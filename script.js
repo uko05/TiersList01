@@ -348,11 +348,28 @@ function loadImages() {
 }
 
 function saveImage() {
-    html2canvas(document.getElementById('grid'), {
+    // 背景色を背景に描画するための仮のキャンバスを作成
+    const tempCanvas = document.createElement('canvas');
+    const tempContext = tempCanvas.getContext('2d');
+    const grid = document.getElementById('grid');
+    const computedStyle = window.getComputedStyle(grid);
+    const backgroundColor = computedStyle.backgroundColor;
+
+    html2canvas(grid, {
         useCORS: true,
-        backgroundColor: null  // 背景色を設定しない（透過状態を維持）
+        backgroundColor: null
     }).then(canvas => {
-        canvas.toBlob(function(blob) {
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+
+        // 背景色を設定
+        tempContext.fillStyle = backgroundColor;
+        tempContext.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+        // 元のキャンバスを背景の上に描画
+        tempContext.drawImage(canvas, 0, 0);
+
+        tempCanvas.toBlob(function(blob) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             
