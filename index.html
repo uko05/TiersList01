@@ -3,29 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>キャラクター Tier リスト</title>
+    <title>原神推しキャラランキング</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="tier-table">
-        <div class="tier-row" id="tier-1">
-            <span>Tier 1</span>
-            <div class="drop-zone" id="tier-1-drop"></div>
+    <header>
+        <h1>原神推しキャラランキング</h1>
+        <button id="save-button">Save Image</button>
+    </header>
+    <div class="container" id="grid">
+        <!-- 列名を追加 -->
+        <div class="header"><img src="chara/Genso/hi.png" alt="炎"></div>
+        <div class="header"><img src="chara/Genso/mizu.png" alt="水"></div>
+        <div class="header"><img src="chara/Genso/koori.png" alt="氷"></div>
+        <div class="header"><img src="chara/Genso/kaminari.png" alt="雷"></div>
+        <div class="header"><img src="chara/Genso/kusa.png" alt="草"></div>
+        <div class="header"><img src="chara/Genso/kaze.png" alt="風"></div>
+        <div class="header"><img src="chara/Genso/iwa.png" alt="岩"></div>
+
+        <!-- グリッドアイテムを追加 -->
+        <div class="cell" data-position="0"></div>
+        <div class="cell" data-position="1"></div>
+        <div class="cell" data-position="2"></div>
+        <div class="cell" data-position="3"></div>
+        <div class="cell" data-position="4"></div>
+        <div class="cell" data-position="5"></div>
+        <div class="cell" data-position="6"></div>
+        <div class="cell" data-position="7"></div>
+        <div class="cell" data-position="8"></div>
+        <div class="cell" data-position="9"></div>
+        <div class="cell" data-position="10"></div>
+        <div class="cell" data-position="11"></div>
+        <div class="cell" data-position="12"></div>
+        <div class="cell" data-position="13"></div>
+        <div class="cell" data-position="14"></div>
+        <div class="cell" data-position="15"></div>
+        <div class="cell" data-position="16"></div>
+        <div class="cell" data-position="17"></div>
+        <div class="cell" data-position="18"></div>
+        <div class="cell" data-position="19"></div>
+        <div class="cell" data-position="20"></div>
+    </div>
+  
+    <div class="tab-wrap">
+        <input id="TAB-01" type="radio" name="TAB" class="tab-switch" checked="checked" />
+        <label class="tab-label" for="TAB-01" data-category="hi">炎</label>
+        <div class="tab-content">
+            <div class="image-list">
+                <!-- サムネイル画像をJavaScriptで追加します -->
+            </div>
         </div>
-        <div class="tier-row" id="tier-2">
-            <span>Tier 2</span>
-            <div class="drop-zone" id="tier-2-drop"></div>
+        
+        <input id="TAB-02" type="radio" name="TAB" class="tab-switch" />
+        <label class="tab-label" for="TAB-02" data-category="mizu">水</label>
+        <div class="tab-content">
+            <div class="image-list">
+                <!-- サムネイル画像をJavaScriptで追加します -->
+            </div>
         </div>
-        <div class="tier-row" id="tier-3">
-            <span>Tier 3</span>
-            <div class="drop-zone" id="tier-3-drop"></div>
+        
+        <input id="TAB-03" type="radio" name="TAB" class="tab-switch" />
+        <label class="tab-label" for="TAB-03" data-category="koori">氷</label>
+        <div class="tab-content">
+            <div class="image-list">
+                <!-- サムネイル画像をJavaScriptで追加します -->
+            </div>
+        </div>
+        
+        <input id="TAB-04" type="radio" name="TAB" class="tab-switch" />
+        <label class="tab-label" for="TAB-04" data-category="kaminari">雷</label>
+        <div class="tab-content">
+            <div class="image-list">
+                <!-- サムネイル画像をJavaScriptで追加します -->
+            </div>
+        </div>
+        
+        <input id="TAB-05" type="radio" name="TAB" class="tab-switch" />
+        <label class="tab-label" for="TAB-05" data-category="kusa">草</label>
+        <div class="tab-content">
+            <div class="image-list">
+                <!-- サムネイル画像をJavaScriptで追加します -->
+            </div>
+        </div>
+        
+        <input id="TAB-06" type="radio" name="TAB" class="tab-switch" />
+        <label class="tab-label" for="TAB-06" data-category="kaze">風</label>
+        <div class="tab-content">
+            <div class="image-list">
+                <!-- サムネイル画像をJavaScriptで追加します -->
+            </div>
+        </div>
+        
+        <input id="TAB-07" type="radio" name="TAB" class="tab-switch" />
+        <label class="tab-label" for="TAB-07" data-category="iwa">岩</label>
+        <div class="tab-content">
+            <div class="image-list">
+                <!-- サムネイル画像をJavaScriptで追加します -->
+            </div>
         </div>
     </div>
 
-    <div id="characters">
-        <!-- キャラクター画像一覧がここに表示される -->
-    </div>
-
+    <a href="https://x.com/uko_dayo_" target="_blank">
+        <img src="chara/Image/twitter_image.png" alt="Twitter" class="twitter-icon">
+    </a>
+    <Label class="sad_label">  ＜友達ください…</Label>
     <script src="script.js"></script>
 </body>
 </html>
