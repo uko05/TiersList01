@@ -66,7 +66,7 @@ header {
 .cell {
     position: relative;
     border: 1px solid #ddd;
-    background-color: transparent;
+    background-color: #0000aa;
     overflow: hidden;
     cursor: pointer;
     border-radius: 8px;
@@ -127,7 +127,7 @@ header {
 }
 
 #grid {
-    background-color: transparent;
+    background-color: #01ff00; /* transparent */
 }
 
 .tab-wrap {
