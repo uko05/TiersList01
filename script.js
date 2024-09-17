@@ -348,7 +348,11 @@ function loadImages() {
 }
 
 function saveImage() {
-    html2canvas(document.getElementById('grid'), { useCORS: true }).then(canvas => {
+    html2canvas(document.getElementById('grid'), { 
+        useCORS: true, 
+        backgroundColor: null,  // 背景色をnullに設定
+        scale: window.devicePixelRatio // 高解像度でキャプチャ
+    }).then(canvas => {
         canvas.toBlob(function(blob) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
