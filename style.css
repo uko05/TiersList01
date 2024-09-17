@@ -6,7 +6,6 @@ body {
     padding: 0;
     text-align: center;
     font-family: 'Comic Sans MS', 'Arial', sans-serif; /* かわいいフォントに変更 */
-
 }
 
 h1 {
@@ -140,15 +139,6 @@ header {
     margin: 20px auto; /* 中央寄せ */
 }
 
-.tab-wrap:after {
-    content: '';
-    width: 100%;
-    height: 3px;
-    background: DeepSkyBlue;
-    display: block;
-    order: -1;
-}
-
 .tab-container {
     width: 50%; /* または上部の表と同じ具体的な幅を指定 */
     display: flex; /* タブを横並びにする */
@@ -170,6 +160,15 @@ header {
     border-radius: 5px 5px 0 0;
     flex: 1;
     box-sizing: border-box; /* ボックスサイズを含める */
+}
+
+.tab-wrap:after {
+    content: '';
+    width: 100%;
+    height: 3px;
+    background: DeepSkyBlue;
+    display: block;
+    order: -1;
 }
 
 .tab-label:not(:last-of-type) {
@@ -231,4 +230,45 @@ header {
 .sad_label {
     color: Gray;
     font-size: 10px;
+}
+
+/* スマホで横画面表示時のスタイル調整 */
+@media only screen and (min-width: 768px) and (orientation: landscape) {
+    .tabs {
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .tab-wrap {
+        width: 100%;
+        max-width: 1000px;
+        margin: 20px auto;
+    }
+
+    .tab-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .tab-label {
+        font-size: 18px;
+    }
+
+    .container {
+        max-width: 100%;
+        margin: 20px auto;
+    }
+
+    #save-button {
+        padding: 10px 40px; /* パディングを調整 */
+        font-size: 18px; /* フォントサイズの調整 */
+    }
+
+    #save-button:hover {
+        background-color: #0056b3; /* ホバー時の背景色を変更 */
+        color: #fff; /* ホバー時の文字色を変更 */
+        border-color: #0056b3; /* ホバー時のボーダー色を変更 */
+    }
 }
