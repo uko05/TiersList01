@@ -134,9 +134,8 @@ header {
 .tab-wrap {
     display: flex;
     flex-wrap: wrap;
-    margin: 20px 0;
     width: 850px; /* 上部の表（grid）の幅に合わせる */
-    margin: 20px auto; /* 中央寄せ */
+    margin: 5px auto; /* 中央寄せ */
 }
 
 .tab-container {
@@ -230,6 +229,14 @@ header {
 .sad_label {
     color: Gray;
     font-size: 10px;
+}
+
+.sad_label_migi {
+    color: #A9A9A9;
+    font-size: 10px;
+    text-align: right;
+    width: 700px;
+    padding: 3px; /* 幅を広くするためのパディング */
 }
 
 /* スマホの縦画面表示に対応 */
