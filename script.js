@@ -87,7 +87,8 @@ const imageData = [
     { src: 'rosaria.png', category: 'koori' },
     { src: 'Mavuika.png', category: 'hi' },
     { src: 'Iansan.png', category: 'kaminari' },
-    { src: 'Chasca.png', category: 'koori' }
+    { src: 'Chasca.png', category: 'koori' },
+    { src: 'Kachina.png', category: 'iwa' }
 ];
 const MAX_SELECTION = 3;
 const SELECTED_LABEL = '☑';
