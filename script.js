@@ -1,5 +1,6 @@
 const imageFolder = 'chara/';
 const imageData = [
+    { src: 'oruron.png', category: 'kaminari' },
     { src: 'AratakiItto.png', category: 'iwa' },
     { src: 'Albedo.png', category: 'iwa' },
     { src: 'Arlecchino.png', category: 'hi' },
@@ -95,6 +96,23 @@ const SELECTED_LABEL = '☑';
 
 // タブごとの選択状態を管理するためのオブジェクト
 const tabSelections = {};
+
+// タブの選択状態を表示
+function updateTabSelectionsDisplay() {
+    const tabSelectionsElement = document.getElementById('tab-selections');
+    tabSelectionsElement.innerHTML = ''; // クリアしてから再描画
+
+    // tabSelectionsが空でも問題ないように対策
+    if (tabSelections && Object.keys(tabSelections).length > 0) {
+        for (const [category, selections] of Object.entries(tabSelections)) {
+            const categoryInfo = document.createElement('div');
+            categoryInfo.textContent = `${category}: ${selections.join(', ')}`;
+            tabSelectionsElement.appendChild(categoryInfo);
+        }
+    } else {
+        tabSelectionsElement.textContent = 'No selections made yet.';
+    }
+}
 
 function loadImages() {
     const tabs = document.querySelectorAll('.tab-label');
