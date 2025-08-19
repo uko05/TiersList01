@@ -358,8 +358,8 @@ header {
     padding: 3px; /* 幅を広くするためのパディング */
 }
 
-/* スマホの縦画面表示に対応 */
-@media only screen and (max-width: 768px) {
+/* スマホの縦画面表示に対応 768px */
+@media only screen and (max-width: 932px) {
     .container {
         display: grid;
         grid-template-columns: repeat(7, minmax(100px, 1fr)); /* 各列を100px固定 */
@@ -377,6 +377,10 @@ header {
         border-radius: 5px; /* 角を少し丸める */
     }
 
+    .tab-wrap {
+        width: 720px; /* 上部の表（grid）の幅に合わせる */
+    }
+    
     .tabs {
         flex-direction: column; /* タブを縦並びに */
     }
@@ -385,9 +389,6 @@ header {
         font-size: 20px; /* タイトルのフォントサイズを縮小 */
     }
 
-    .tab-wrap {
-        width: 650px; /* 上部の表（grid）の幅に合わせる */
-    }
     
     #save-button {
         padding: 10px 40px; /* ボタンのサイズを縮小 */
