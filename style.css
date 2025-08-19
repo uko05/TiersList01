@@ -253,7 +253,6 @@ header {
 .tab-wrap {
     display: flex;
     flex-wrap: wrap;
-    // width: 850px; /* 上部の表（grid）の幅に合わせる */
     width: 720px; /* 上部の表（grid）の幅に合わせる */
     margin: 5px auto; /* 中央寄せ */
 }
@@ -362,14 +361,9 @@ header {
 /* スマホの縦画面表示に対応 768px */
 @media only screen and (max-width: 932px) {
     .container {
-        display: grid;
         grid-template-columns: repeat(7, minmax(100px, 1fr)); /* 各列を100px固定 */
-        gap: 5px; /* 少し隙間をあける */
-        padding: 10px;
-        max-width: 100%; /* コンテナの幅を画面に合わせる */
         overflow-x: auto; /* 横スクロールを有効化 */
         justify-content: start; /* スクロール位置を左に固定 */
-        // padding: 10px 0px 5px 40px;
     }
 
     .cell {
