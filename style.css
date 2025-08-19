@@ -368,6 +368,7 @@ header {
         max-width: 100%; /* コンテナの幅を画面に合わせる */
         overflow-x: auto; /* 横スクロールを有効化 */
         justify-content: start; /* スクロール位置を左に固定 */
+        padding: 10px 0px 5px 40px;
     }
 
     .cell {
@@ -384,6 +385,10 @@ header {
         font-size: 20px; /* タイトルのフォントサイズを縮小 */
     }
 
+    .tab-wrap {
+        width: 650px; /* 上部の表（grid）の幅に合わせる */
+    }
+    
     #save-button {
         padding: 10px 40px; /* ボタンのサイズを縮小 */
         font-size: 14px;
