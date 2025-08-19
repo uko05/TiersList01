@@ -207,7 +207,7 @@ header {
 .image-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 5px;
     justify-content: flex-start; /* 画像を左寄せにする */
 }
 
