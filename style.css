@@ -253,7 +253,8 @@ header {
 .tab-wrap {
     display: flex;
     flex-wrap: wrap;
-    width: 850px; /* 上部の表（grid）の幅に合わせる */
+    // width: 850px; /* 上部の表（grid）の幅に合わせる */
+    width: 720px; /* 上部の表（grid）の幅に合わせる */
     margin: 5px auto; /* 中央寄せ */
 }
 
@@ -368,17 +369,13 @@ header {
         max-width: 100%; /* コンテナの幅を画面に合わせる */
         overflow-x: auto; /* 横スクロールを有効化 */
         justify-content: start; /* スクロール位置を左に固定 */
-        padding: 10px 0px 5px 40px;
+        // padding: 10px 0px 5px 40px;
     }
 
     .cell {
         width: 100%;
         height: auto; /* 高さを自動調整 */
         border-radius: 5px; /* 角を少し丸める */
-    }
-
-    .tab-wrap {
-        width: 720px; /* 上部の表（grid）の幅に合わせる */
     }
     
     .tabs {
