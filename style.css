@@ -366,11 +366,15 @@ header {
         justify-content: start; /* スクロール位置を左に固定 */
     }
 
-    .cell {
-        width: 100%;
-        height: auto; /* 高さを自動調整 */
-        border-radius: 5px; /* 角を少し丸める */
+    .container {
+        padding: 10px 0px 5px 40px;
     }
+    
+    // .cell {
+    //     width: 100%;
+    //     height: auto; /* 高さを自動調整 */
+    //     border-radius: 5px; /* 角を少し丸める */
+    // }
     
     .tabs {
         flex-direction: column; /* タブを縦並びに */
