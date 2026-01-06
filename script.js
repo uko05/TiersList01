@@ -481,14 +481,16 @@ function saveImage() {
   const grid = document.getElementById('grid');
   if (!grid) return;
 
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || navigator.maxTouchPoints > 0;
+  const isMobile =
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    navigator.maxTouchPoints > 0;
 
   html2canvas(grid, { useCORS: true, scale: 2 })
     .then(canvas => new Promise(resolve => canvas.toBlob(resolve, 'image/png')))
     .then(async (blob) => {
       if (!blob) throw new Error('Blob 作成に失敗');
-      
-      // ✅ ばかたれモードで保存した時だけ集計
+
+      // ✅ ばかたれモードで保存した時だけ集計 & 連打対策
       const modeC = document.getElementById('modeC');
       const modeCEnabled = !!modeC?.checked;
 
@@ -496,15 +498,38 @@ function saveImage() {
         const selectedImg = document.querySelector('.image-list .image-item.selected');
 
         if (selectedImg?.dataset?.src) {
-          try {
-            await incrementBakatareCount(selectedImg.dataset.src);
-          } catch (e) {
-            console.warn('ばかたれ集計: 失敗（保存は続行）', e);
+          const filenameSrc = selectedImg.dataset.src;
+
+          // --- 同端末連打対策（ばかたれ時のみ） ---
+          // どれくらいで再カウントOKにするか（例：10分）
+          const COOLDOWN_MS = 5 * 60 * 1000;
+
+          // 「同キャラだけ」連打を止める（キャラ別クールダウン）
+          // 全キャラまとめて止めたいなら key を固定文字にしてOK:
+          // const key = 'bakatareLastSent';
+          const key = `bakatareLastSent_${filenameSrc}`;
+
+          const last = Number(localStorage.getItem(key) || 0);
+          const nowMs = Date.now();
+
+          if (nowMs - last >= COOLDOWN_MS) {
+            try {
+              await incrementBakatareCount(filenameSrc);
+              localStorage.setItem(key, String(nowMs));
+            } catch (e) {
+              console.warn('ばかたれ集計: 失敗（保存は続行）', e);
+            }
+          } else {
+            console.log('ばかたれ集計: クールダウン中なので加算しない', {
+              filenameSrc,
+              remainingMs: COOLDOWN_MS - (nowMs - last)
+            });
           }
         } else {
           console.warn('ばかたれ集計: 選択キャラが見つからない');
         }
       }
+      // ✅ modeCEnabled が false のときは、localStorageも集計も一切触らない
 
       // ファイル名（yyyyMMdd_HHmmss）
       const now = new Date();
@@ -531,6 +556,7 @@ function saveImage() {
         } catch (e) {
           console.warn('Share canceled/failed, fallback.', e);
         }
+
         // 共有できないモバイル → 新規タブで画像を開いて長押し保存
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
@@ -553,6 +579,83 @@ function saveImage() {
       alert('画像の保存に失敗しました。もう一度お試しください。');
     });
 }
+
+//function saveImage() {
+//  const grid = document.getElementById('grid');
+//  if (!grid) return;
+//
+//  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || navigator.maxTouchPoints > 0;
+//
+//  html2canvas(grid, { useCORS: true, scale: 2 })
+//    .then(canvas => new Promise(resolve => canvas.toBlob(resolve, 'image/png')))
+//    .then(async (blob) => {
+//      if (!blob) throw new Error('Blob 作成に失敗');
+//      
+//      // ✅ ばかたれモードで保存した時だけ集計
+//      const modeC = document.getElementById('modeC');
+//      const modeCEnabled = !!modeC?.checked;
+//
+//      if (modeCEnabled) {
+//        const selectedImg = document.querySelector('.image-list .image-item.selected');
+//
+//        if (selectedImg?.dataset?.src) {
+//          try {
+//            await incrementBakatareCount(selectedImg.dataset.src);
+//          } catch (e) {
+//            console.warn('ばかたれ集計: 失敗（保存は続行）', e);
+//          }
+//        } else {
+//          console.warn('ばかたれ集計: 選択キャラが見つからない');
+//        }
+//      }
+//
+//      // ファイル名（yyyyMMdd_HHmmss）
+//      const now = new Date();
+//      const yyyy = now.getFullYear();
+//      const mm = String(now.getMonth() + 1).padStart(2, '0');
+//      const dd = String(now.getDate()).padStart(2, '0');
+//      const hh = String(now.getHours()).padStart(2, '0');
+//      const mi = String(now.getMinutes()).padStart(2, '0');
+//      const ss = String(now.getSeconds()).padStart(2, '0');
+//      const filename = `原神推しキャラランキング_${yyyy}${mm}${dd}_${hh}${mi}${ss}.png`;
+//
+//      // ---- モバイル優先ロジック ----
+//      if (isMobile) {
+//        try {
+//          const file = new File([blob], filename, { type: 'image/png' });
+//          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+//            await navigator.share({
+//              files: [file],
+//              title: '原神推しキャラランキング',
+//              text: '写真アプリに保存してね'
+//            });
+//            return; // モバイルは共有シートで完了
+//          }
+//        } catch (e) {
+//          console.warn('Share canceled/failed, fallback.', e);
+//        }
+//        // 共有できないモバイル → 新規タブで画像を開いて長押し保存
+//        const url = URL.createObjectURL(blob);
+//        window.open(url, '_blank');
+//        setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+//        return;
+//      }
+//
+//      // ---- PC(デスクトップ) は従来の「即ダウンロード」に固定 ----
+//      const url = URL.createObjectURL(blob);
+//      const a = document.createElement('a');
+//      a.href = url;
+//      a.download = filename;
+//      document.body.appendChild(a);
+//      a.click();
+//      a.remove();
+//      setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+//    })
+//    .catch(err => {
+//      console.error('Error capturing image:', err);
+//      alert('画像の保存に失敗しました。もう一度お試しください。');
+//    });
+//}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadImages();
