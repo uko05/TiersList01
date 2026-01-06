@@ -155,8 +155,6 @@ const tabSelections = {};
 // タブの選択状態を表示
 function updateTabSelectionsDisplay() {
     const tabSelectionsElement = document.getElementById('tab-selections');
-    if (!tabSelectionsElement) return; // ★これ追加：要素が無ければ終了
-    
     tabSelectionsElement.innerHTML = ''; // クリアしてから再描画
 
     // tabSelectionsが空でも問題ないように対策
@@ -175,40 +173,6 @@ function loadImages() {
     const tabs = document.querySelectorAll('.tab-label');
     const tabContents = document.querySelectorAll('.tab-content');
     const cells = document.querySelectorAll('.cell');
-    const modeC = document.getElementById('modeC');
-    let modeCEnabled = false;
-
-    function clearAllTopCells() {
-        cells.forEach(cell => cell.innerHTML = '');
-    }
-
-    function clearAllListSelections() {
-        document.querySelectorAll('.image-item.selected').forEach(img => {
-            img.classList.remove('selected');
-            removeNumberingAndBorder(img.parentElement);
-        });
-    }
-
-    function clearAllSelectionsEverywhere() {
-        clearAllTopCells();
-        clearAllListSelections();
-        for (const key of Object.keys(tabSelections)) delete tabSelections[key];
-        updateTabSelectionsDisplay();
-    }
-
-    function fillAllCells(src) {
-        cells.forEach(cell => {
-            cell.innerHTML = `<img src="${imageFolder}${src}" class="selected">`;
-        });
-    }
-
-    // C切替：ONでもOFFでも必ず全クリア（復元なし）
-    if (modeC) {
-        modeC.addEventListener('change', () => {
-            modeCEnabled = modeC.checked;
-            clearAllSelectionsEverywhere();
-        });
-    }
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -226,9 +190,7 @@ function loadImages() {
             tabContents.forEach(content => {
                 if (content.previousElementSibling === tab) {
                     updateImageList(category, content.querySelector('.image-list'));
-                    if (!modeCEnabled) {
-                        restoreSelectionState(category); // 選択状態の復元
-                    }
+                    restoreSelectionState(category); // 選択状態の復元
                 }
             });
         });
@@ -259,21 +221,6 @@ function loadImages() {
 
     function handleImageClick(img, category) {
         const src = img.dataset.src;
-        
-        // --- Cモード：単一選択＆全セル埋め ---
-        if (modeCEnabled) {
-            // 前の選択は全部消す（自分で外す必要なし）
-            clearAllSelectionsEverywhere();
-
-            // 今クリックした1枚だけ選択表示
-            img.classList.add('selected');
-            addNumberingAndBorder(img.parentElement, 1);
-
-            // 全セルに同じキャラを表示
-            fillAllCells(src);
-            return; // ★ここで既存処理を完全に止める
-        }
-
         const columnMapping = {
             'hi': [0, 7, 14],
             'mizu': [1, 8, 15],
@@ -418,7 +365,6 @@ function loadImages() {
             const cellIndex = positions[index];
             if (cellIndex !== undefined) {
                 console.log(`Placing image ${src} at position ${cellIndex}`);
-                cells[cellIndex].innerHTML = '';
                 cells[cellIndex].appendChild(img);
             }
         });
@@ -470,7 +416,7 @@ function loadImages() {
     if (saveButton) {
         saveButton.addEventListener('click', () => {
             const tabCategory = document.querySelector('.tab-label.active').dataset.category;
-            saveImage();
+            saveImage(tabCategory);
         });
     }
 }
