@@ -1,3 +1,5 @@
+import { incrementBakatareCount } from './bakatareCount.js';
+
 const imageFolder = 'chara/';
 const imageData = [
     { src: 'niko.png', category: 'hi' },
@@ -485,6 +487,24 @@ function saveImage() {
     .then(canvas => new Promise(resolve => canvas.toBlob(resolve, 'image/png')))
     .then(async (blob) => {
       if (!blob) throw new Error('Blob 作成に失敗');
+      
+      // ✅ ばかたれモードで保存した時だけ集計
+      const modeC = document.getElementById('modeC');
+      const modeCEnabled = !!modeC?.checked;
+
+      if (modeCEnabled) {
+        const selectedImg = document.querySelector('.image-list .image-item.selected');
+
+        if (selectedImg?.dataset?.src) {
+          try {
+            await incrementBakatareCount(selectedImg.dataset.src);
+          } catch (e) {
+            console.warn('ばかたれ集計: 失敗（保存は続行）', e);
+          }
+        } else {
+          console.warn('ばかたれ集計: 選択キャラが見つからない');
+        }
+      }
 
       // ファイル名（yyyyMMdd_HHmmss）
       const now = new Date();
