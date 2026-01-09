@@ -154,6 +154,69 @@ parentNode.addEventListener('click', (event) => {
 // タブごとの選択状態を管理するためのオブジェクト
 const tabSelections = {};
 
+const i18n = {
+  ja: {
+    title: "原神推しキャラランキング",
+    save: "Save Image",
+    default: "デフォルト",
+    hideLeft: "左バー消滅",
+    bakatare: "ばかたれモード",
+    mobileHint: "※スマホの人は横画面推奨",
+    hi: "炎",
+    mizu: "水",
+    koori: "氷",
+    kaminari: "雷",
+    kusa: "草",
+    kaze: "風",
+    iwa: "岩",
+  },
+  en: {
+    title: "Genshin Oshi Character Ranking",
+    save: "Save Image",
+    default: "Default",
+    hideLeft: "Hide Left Bar",
+    bakatare: "Bakatare Mode",
+    mobileHint: "*For mobile, landscape mode recommended",
+    hi: "Pyro",
+    mizu: "Hydro",
+    koori: "Cryo",
+    kaminari: "Electro",
+    kusa: "Dendro",
+    kaze: "Anemo",
+    iwa: "Geo",
+  }
+};
+
+// ===== i18n適用 =====
+function applyLang(lang) {
+  const dict = i18n[lang] || i18n.ja;
+
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    if (dict[key] != null) el.textContent = dict[key];
+  });
+
+  // 言語を保存（次回も維持）
+  localStorage.setItem("lang", lang);
+}
+
+// ラジオボタンの監視
+function initLangSwitch() {
+  const saved = localStorage.getItem("lang") || "ja";
+  const radio = document.querySelector(`input[name="lang"][value="${saved}"]`);
+  if (radio) radio.checked = true;
+
+  // 初期適用
+  applyLang(saved);
+
+  // change適用（全ラジオに付与）
+  document.querySelectorAll('input[name="lang"]').forEach(r => {
+    r.addEventListener("change", (e) => {
+      applyLang(e.target.value);
+    });
+  });
+}
+
 // タブの選択状態を表示
 function updateTabSelectionsDisplay() {
     const tabSelectionsElement = document.getElementById('tab-selections');
@@ -581,7 +644,15 @@ function saveImage() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initLangSwitch();
     loadImages();
+
+    // 画像生成などでDOMが増えた後に、現在の言語でもう一度適用
+    const currentLang =
+      document.querySelector('input[name="lang"]:checked')?.value ||
+      localStorage.getItem("lang") ||
+      "ja";
+    applyLang(currentLang);
 
     const sidebar = document.getElementById('sidebar');
     const sizeOptions = document.querySelectorAll('input[name="size-option"]');

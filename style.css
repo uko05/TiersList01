@@ -301,6 +301,18 @@ header {
     background-color: #fafafa;
 }
 
+.lang-switch {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+.lang-switch label {
+  margin-left: 8px;
+  cursor: pointer;
+}
+
 /* アクティブなタブ */
 .tab-switch:checked + .tab-label {
     background: DeepSkyBlue;

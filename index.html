@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="原神（げんしん）の推しキャラを元素別に自由に並べてランキング・Tier表を作れるサイトです。画像を保存して自分の推しをみんなに共有しよう！推しの共有の他にも色々な使い方もできます！うーこの部屋では「推しキャラランキング」の他にも色々な機能があるから試してみてね！">
+    <meta name="description" content="原神（げんしん）の推しキャラを元素別に自由に並べてランキング・Tier表を作れるサイトです。画像を保存して自分の推しをみんなに共有しよう！推しの共有の他にも色々な使い方もできます！原神推しキャラランキング | Genshin Oshi Character Ranking | うーこの部屋では「推しキャラランキング」の他にも色々な機能があるから試してみてね！">
 
-    <title>【原神】うーこの推しキャラランキング - うーこの部屋</title>
+    <title>【原神】うーこの推しキャラランキング - うーこの部屋|Genshin Oshi Character Ranking</title>
     <link rel="stylesheet" href="style.css">
     
     <link rel="icon" href="./favicon.ico">
@@ -35,17 +35,44 @@
 </head>
 <body>
     <header>
-        <h1>原神推しキャラランキング</h1>
-        <button id="save-button">Save Image</button>
-        <div>
-            <label><input type="radio" name="size-option" value="default" checked> デフォルト </label>
-            <label><input type="radio" name="size-option" value="hakai"> 左バー消滅 </label>    <label>
-            <input type="checkbox" id="modeC">
-              ばかたれモード
-            </label></br>
-            <Label>※スマホの人は横画面推奨</Label>
+      <div class="lang-switch">
+        <label>
+          <input type="radio" name="lang" value="ja" checked>
+          日本語
+        </label>
+        <label>
+          <input type="radio" name="lang" value="en">
+          English
+        </label>
+      </div>
+
+      <h1 data-i18n="title">原神推しキャラランキング</h1>
+
+      <button id="save-button" data-i18n="save">Save Image</button>
+
+      <div>
+        <label>
+          <input type="radio" name="size-option" value="default" checked>
+          <span data-i18n="default">デフォルト</span>
+        </label>
+
+        <label>
+          <input type="radio" name="size-option" value="hakai">
+          <span data-i18n="hideLeft">左バー消滅</span>
+        </label>
+
+        <label>
+          <input type="checkbox" id="modeC">
+          <span data-i18n="bakatare">ばかたれモード</span>
+        </label>
+        <br>
+
+        <div class="note" data-i18n="note">
+          ※スマホの人は横画面推奨
         </div>
+      </div>
     </header>
+
     <div class="container" id="grid">
      <!-- ----------------------------左ペイン------------------------------------------- -->
         <div class="sidebar" id="sidebar">
@@ -119,7 +146,14 @@
   
     <div class="tab-wrap">
         <input id="TAB-01" type="radio" name="TAB" class="tab-switch" checked="checked" />
-        <label class="tab-label" for="TAB-01" data-category="hi">炎</label>
+        <label
+          class="tab-label"
+          for="TAB-01"
+          data-category="hi"
+          data-i18n="hi"
+        >
+          炎
+        </label>
         <div class="tab-content">
             <div class="image-list">
                 <!-- サムネイル画像をJavaScriptで追加します -->
@@ -127,7 +161,14 @@
         </div>
         
         <input id="TAB-02" type="radio" name="TAB" class="tab-switch" />
-        <label class="tab-label" for="TAB-02" data-category="mizu">水</label>
+        <label
+          class="tab-label"
+          for="TAB-02"
+          data-category="mizu"
+          data-i18n="mizu"
+        >
+          水
+        </label>
         <div class="tab-content">
             <div class="image-list">
                 <!-- サムネイル画像をJavaScriptで追加します -->
@@ -135,7 +176,14 @@
         </div>
         
         <input id="TAB-03" type="radio" name="TAB" class="tab-switch" />
-        <label class="tab-label" for="TAB-03" data-category="koori">氷</label>
+        <label
+          class="tab-label"
+          for="TAB-03"
+          data-category="koori"
+          data-i18n="koori"
+        >
+          氷
+        </label>
         <div class="tab-content">
             <div class="image-list">
                 <!-- サムネイル画像をJavaScriptで追加します -->
@@ -143,7 +191,14 @@
         </div>
         
         <input id="TAB-04" type="radio" name="TAB" class="tab-switch" />
-        <label class="tab-label" for="TAB-04" data-category="kaminari">雷</label>
+        <label
+          class="tab-label"
+          for="TAB-04"
+          data-category="kaminari"
+          data-i18n="kaminari"
+        >
+          雷
+        </label>
         <div class="tab-content">
             <div class="image-list">
                 <!-- サムネイル画像をJavaScriptで追加します -->
@@ -151,7 +206,14 @@
         </div>
         
         <input id="TAB-05" type="radio" name="TAB" class="tab-switch" />
-        <label class="tab-label" for="TAB-05" data-category="kusa">草</label>
+        <label
+          class="tab-label"
+          for="TAB-05"
+          data-category="kusa"
+          data-i18n="kusa"
+        >
+          草
+        </label>
         <div class="tab-content">
             <div class="image-list">
                 <!-- サムネイル画像をJavaScriptで追加します -->
@@ -159,7 +221,14 @@
         </div>
         
         <input id="TAB-06" type="radio" name="TAB" class="tab-switch" />
-        <label class="tab-label" for="TAB-06" data-category="kaze">風</label>
+        <label
+          class="tab-label"
+          for="TAB-06"
+          data-category="kaze"
+          data-i18n="kaze"
+        >
+          風
+        </label>
         <div class="tab-content">
             <div class="image-list">
                 <!-- サムネイル画像をJavaScriptで追加します -->
@@ -167,7 +236,14 @@
         </div>
         
         <input id="TAB-07" type="radio" name="TAB" class="tab-switch" />
-        <label class="tab-label" for="TAB-07" data-category="iwa">岩</label>
+        <label
+          class="tab-label"
+          for="TAB-07"
+          data-category="iwa"
+          data-i18n="iwa"
+        >
+          岩
+        </label>
         <div class="tab-content">
             <div class="image-list">
                 <!-- サムネイル画像をJavaScriptで追加します -->
