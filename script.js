@@ -2,8 +2,70 @@ import { incrementBakatareCount } from './bakatareCount.js';
 import {
   onAccountAuthState, saveProfileImage, getSavedProfileImage, formatSavedAt,
 } from 'https://uko05.github.io/24_AccountCenter/saved-image.js';
+import { db } from './firebaseConfig.js';
+import { doc, runTransaction, increment } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 import { genshinChars } from 'https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/chara_data/genshin_chars.js';
+
+// ===== ユーザーID(uko05.github.io配下の全サイト共通のlocalStorageキー) =====
+const LS_USER_ID = 'genshinOmikuji_userId';
+function getSharedUserId() {
+  let id = localStorage.getItem(LS_USER_ID);
+  if (!id) {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    id = 'u_' + Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+    localStorage.setItem(LS_USER_ID, id);
+  }
+  return id;
+}
+
+// ===== 「画像を1回生成する」ミッション(アカウント登録者限定・生涯1回・+20UP) =====
+// ログイン判定はsaved-image.jsの仕組みを流用(このサイトの既定Appはgenshin-bakatare01なので
+// saveProfileImage同様、ログインセッションを正しく検知できる)。
+let missionLoggedInUser = null;
+onAccountAuthState((user) => { missionLoggedInUser = user; });
+
+function showMissionToast(text) {
+  let toast = document.getElementById('uko-mission-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'uko-mission-toast';
+    toast.className = 'uko-mission-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = text;
+  toast.classList.remove('show');
+  void toast.offsetWidth; // reflow
+  toast.classList.add('show');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+// 画像生成が成功した時に呼ぶ。未ログイン、または達成済みなら静かに何もしない。
+async function claimImageGenerationMission() {
+  if (!missionLoggedInUser) return;
+  const userId = getSharedUserId();
+  const ref = doc(db, 'omikujiUsers', userId);
+  try {
+    const claimed = await runTransaction(db, async (tx) => {
+      const snap = await tx.get(ref);
+      const data = snap.exists() ? snap.data() : {};
+      if (data.missionsClaimed?.genshinRankingImage) return false;
+      tx.set(ref, {
+        ukoPoints: increment(20),
+        missionsClaimed: { genshinRankingImage: true },
+      }, { merge: true });
+      return true;
+    });
+    if (claimed) {
+      const lang = savedImageLang();
+      showMissionToast(lang === 'en' ? 'Mission complete! +20 UP' : 'ミッション達成！ +20UP');
+    }
+  } catch (e) {
+    console.error('[mission] claim failed', e);
+  }
+}
 
 const imageFolder = 'https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/chara_icon/';
 const imageData = genshinChars
@@ -500,6 +562,7 @@ function saveImage() {
 
       // アカウント登録者ならクラウドにも保存(失敗しても無視、ローカル保存は継続)
       saveProfileImage(SITE_ID, blob).then(() => refreshSavedImageUI());
+      claimImageGenerationMission();
 
       // ✅ ばかたれモードで保存した時だけ集計 & 連打対策
       const modeC = document.getElementById('modeC');
