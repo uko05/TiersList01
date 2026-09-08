@@ -23,8 +23,12 @@ function getSharedUserId() {
 // ===== 「画像を1回生成する」ミッション(アカウント登録者限定・生涯1回・+20UP) =====
 // ログイン判定はsaved-image.jsの仕組みを流用(このサイトの既定Appはgenshin-bakatare01なので
 // saveProfileImage同様、ログインセッションを正しく検知できる)。
+const MISSION_CLAIM_KEY = 'genshinRankingImage';
 let missionLoggedInUser = null;
-onAccountAuthState((user) => { missionLoggedInUser = user; });
+onAccountAuthState((user) => {
+  missionLoggedInUser = user;
+  if (user) claimImageGenerationMissionIfAlreadySaved();
+});
 
 function showMissionToast(text) {
   let toast = document.getElementById('uko-mission-toast');
@@ -42,19 +46,17 @@ function showMissionToast(text) {
   toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 3200);
 }
 
-// 画像生成が成功した時に呼ぶ。未ログイン、または達成済みなら静かに何もしない。
-async function claimImageGenerationMission() {
-  if (!missionLoggedInUser) return;
+async function claimMissionOnce() {
   const userId = getSharedUserId();
   const ref = doc(db, 'omikujiUsers', userId);
   try {
     const claimed = await runTransaction(db, async (tx) => {
       const snap = await tx.get(ref);
       const data = snap.exists() ? snap.data() : {};
-      if (data.missionsClaimed?.genshinRankingImage) return false;
+      if (data.missionsClaimed?.[MISSION_CLAIM_KEY]) return false;
       tx.set(ref, {
         ukoPoints: increment(20),
-        missionsClaimed: { genshinRankingImage: true },
+        missionsClaimed: { [MISSION_CLAIM_KEY]: true },
       }, { merge: true });
       return true;
     });
@@ -64,6 +66,22 @@ async function claimImageGenerationMission() {
     }
   } catch (e) {
     console.error('[mission] claim failed', e);
+  }
+}
+
+// 画像生成が成功した時に呼ぶ。未ログインなら静かに何もしない。
+function claimImageGenerationMission() {
+  if (!missionLoggedInUser) return;
+  claimMissionOnce();
+}
+
+// 既にログイン前から画像を保存済みだった人を、ログイン検知時に遡って達成扱いにする
+async function claimImageGenerationMissionIfAlreadySaved() {
+  try {
+    const entry = await getSavedProfileImage(SITE_ID);
+    if (entry) await claimMissionOnce();
+  } catch (e) {
+    console.error('[mission] backfill check failed', e);
   }
 }
 
