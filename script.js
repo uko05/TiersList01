@@ -123,7 +123,7 @@ const NATION_COLORS = {
   NodKrai:   '#7a8fa6', // 未判明(氷雪の地のイメージでグレー系)
 };
 const NATION_CATEGORIES = [{ key: 'another', icon: null, color: null }]
-  .concat(['Mondstadt', 'Liyue', 'Inazuma', 'Sumeru', 'Fontaine', 'Natlan', 'Snezhnaya', 'NodKrai']
+  .concat(['Mondstadt', 'Liyue', 'Inazuma', 'Sumeru', 'Fontaine', 'Natlan', 'NodKrai', 'Snezhnaya']
     .map(key => ({ key, icon: `${NATION_ICON_BASE}${key}.png`, color: NATION_COLORS[key] })));
 
 function categoriesForMode(mode) {
