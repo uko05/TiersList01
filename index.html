@@ -50,6 +50,11 @@
       <button id="save-button" data-i18n="save">Save Image</button>
 
       <div>
+        <div class="rank-mode-tab-bar" id="rank-mode-tab-bar">
+          <button type="button" class="rank-mode-tab-btn active" data-mode="element" data-i18n="modeElement">元素別</button>
+          <button type="button" class="rank-mode-tab-btn" data-mode="nation" data-i18n="modeNation">国別</button>
+        </div>
+
         <label>
           <input type="checkbox" id="modeC">
           <span data-i18n="bakatare">ばかたれモード</span>
@@ -80,145 +85,12 @@
     </div>
 
     <div class="container" id="grid">
-        <!-- 列名を追加 -->
-        <div class="header"><img src="https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/Genso/hi.png" alt="炎"></div>
-        <div class="header"><img src="https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/Genso/mizu.png" alt="水"></div>
-        <div class="header"><img src="https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/Genso/koori.png" alt="氷"></div>
-        <div class="header"><img src="https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/Genso/kaminari.png" alt="雷"></div>
-        <div class="header"><img src="https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/Genso/kusa.png" alt="草"></div>
-        <div class="header"><img src="https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/Genso/kaze.png" alt="風"></div>
-        <div class="header"><img src="https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/Genso/iwa.png" alt="岩"></div>
-
-        <!-- グリッドアイテムを追加 -->
-        <div class="cell" data-position="0"></div>
-        <div class="cell" data-position="1"></div>
-        <div class="cell" data-position="2"></div>
-        <div class="cell" data-position="3"></div>
-        <div class="cell" data-position="4"></div>
-        <div class="cell" data-position="5"></div>
-        <div class="cell" data-position="6"></div>
-        <div class="cell" data-position="7"></div>
-        <div class="cell" data-position="8"></div>
-        <div class="cell" data-position="9"></div>
-        <div class="cell" data-position="10"></div>
-        <div class="cell" data-position="11"></div>
-        <div class="cell" data-position="12"></div>
-        <div class="cell" data-position="13"></div>
-        <div class="cell" data-position="14"></div>
-        <div class="cell" data-position="15"></div>
-        <div class="cell" data-position="16"></div>
-        <div class="cell" data-position="17"></div>
-        <div class="cell" data-position="18"></div>
-        <div class="cell" data-position="19"></div>
-        <div class="cell" data-position="20"></div>
+        <!-- 列見出し・セルは script.js が現在のモード(元素別/国別)に合わせて作成します -->
         <Label class="sad_label_migi">Twitter:@uko_dayo_</Label>
     </div>
-  
-    <div class="tab-wrap">
-        <input id="TAB-01" type="radio" name="TAB" class="tab-switch" checked="checked" />
-        <label
-          class="tab-label"
-          for="TAB-01"
-          data-category="hi"
-          data-i18n="hi"
-        >
-          炎
-        </label>
-        <div class="tab-content">
-            <div class="image-list">
-                <!-- サムネイル画像をJavaScriptで追加します -->
-            </div>
-        </div>
-        
-        <input id="TAB-02" type="radio" name="TAB" class="tab-switch" />
-        <label
-          class="tab-label"
-          for="TAB-02"
-          data-category="mizu"
-          data-i18n="mizu"
-        >
-          水
-        </label>
-        <div class="tab-content">
-            <div class="image-list">
-                <!-- サムネイル画像をJavaScriptで追加します -->
-            </div>
-        </div>
-        
-        <input id="TAB-03" type="radio" name="TAB" class="tab-switch" />
-        <label
-          class="tab-label"
-          for="TAB-03"
-          data-category="koori"
-          data-i18n="koori"
-        >
-          氷
-        </label>
-        <div class="tab-content">
-            <div class="image-list">
-                <!-- サムネイル画像をJavaScriptで追加します -->
-            </div>
-        </div>
-        
-        <input id="TAB-04" type="radio" name="TAB" class="tab-switch" />
-        <label
-          class="tab-label"
-          for="TAB-04"
-          data-category="kaminari"
-          data-i18n="kaminari"
-        >
-          雷
-        </label>
-        <div class="tab-content">
-            <div class="image-list">
-                <!-- サムネイル画像をJavaScriptで追加します -->
-            </div>
-        </div>
-        
-        <input id="TAB-05" type="radio" name="TAB" class="tab-switch" />
-        <label
-          class="tab-label"
-          for="TAB-05"
-          data-category="kusa"
-          data-i18n="kusa"
-        >
-          草
-        </label>
-        <div class="tab-content">
-            <div class="image-list">
-                <!-- サムネイル画像をJavaScriptで追加します -->
-            </div>
-        </div>
-        
-        <input id="TAB-06" type="radio" name="TAB" class="tab-switch" />
-        <label
-          class="tab-label"
-          for="TAB-06"
-          data-category="kaze"
-          data-i18n="kaze"
-        >
-          風
-        </label>
-        <div class="tab-content">
-            <div class="image-list">
-                <!-- サムネイル画像をJavaScriptで追加します -->
-            </div>
-        </div>
-        
-        <input id="TAB-07" type="radio" name="TAB" class="tab-switch" />
-        <label
-          class="tab-label"
-          for="TAB-07"
-          data-category="iwa"
-          data-i18n="iwa"
-        >
-          岩
-        </label>
-        <div class="tab-content">
-            <div class="image-list">
-                <!-- サムネイル画像をJavaScriptで追加します -->
-            </div>
-        </div>
+
+    <div class="tab-wrap" id="tab-wrap">
+        <!-- タブ・一覧も script.js が現在のモードに合わせて作成します -->
     </div>
 
     <a href="https://x.com/uko_dayo_" target="_blank">

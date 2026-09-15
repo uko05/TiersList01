@@ -3,7 +3,7 @@ import {
   onAccountAuthState, saveProfileImage, getSavedProfileImage, formatSavedAt,
 } from 'https://uko05.github.io/24_AccountCenter/saved-image.js';
 import { db } from './firebaseConfig.js';
-import { doc, runTransaction, increment } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { doc, getDoc, runTransaction, increment } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 import { genshinChars } from 'https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/chara_data/genshin_chars.js';
 
@@ -19,6 +19,20 @@ function getSharedUserId() {
   }
   return id;
 }
+
+// ===== 「国別」ランキングタブの解放状態 =====
+// うーこポイント交換所(08_UPoint)で50UPと交換すると
+// omikujiUsers/{userId}.sitePerks.genshinRanking.nationRankingUnlocked が true になる。
+// タブ自体は未解放でも見られるが、キャラ画像はクリックしても反応しない(loadImages側で判定)。
+let nationRankingUnlocked = false;
+const nationRankingUnlockedReady = (async () => {
+  try {
+    const snap = await getDoc(doc(db, 'omikujiUsers', getSharedUserId()));
+    nationRankingUnlocked = !!snap.data()?.sitePerks?.genshinRanking?.nationRankingUnlocked;
+  } catch (e) {
+    console.error('[rankMode] perk fetch failed', e);
+  }
+})();
 
 // ===== 「画像を1回生成する」ミッション(アカウント登録者限定・生涯1回・+20UP) =====
 // ここではUPは付与しない(条件達成フラグを立てるだけ)。実際の受け取りは
@@ -89,9 +103,38 @@ async function markImageGenerationMissionAchievedIfAlreadySaved() {
 }
 
 const imageFolder = 'https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/chara_icon/';
-const imageData = genshinChars
+const GENSO_ICON_BASE  = 'https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/Genso/';
+const NATION_ICON_BASE = 'https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/01_Genshin/country/';
+
+// ===== ランキングモード(元素別/国別)ごとのタブ構成 =====
+// キーはgenshinChars側のelement/nationの値と対応させる。国別はnation未設定キャラの
+// 受け皿として"another"(画像なし・ラベルのみ)を末尾に足す。
+const ELEMENT_CATEGORIES = ['hi', 'mizu', 'koori', 'kaminari', 'kusa', 'kaze', 'iwa']
+  .map(key => ({ key, icon: `${GENSO_ICON_BASE}${key}.png` }));
+const NATION_CATEGORIES = ['Mondstadt', 'Liyue', 'Inazuma', 'Sumeru', 'Fontaine', 'Natlan', 'Snezhnaya', 'NodKrai']
+  .map(key => ({ key, icon: `${NATION_ICON_BASE}${key}.png` }))
+  .concat([{ key: 'another', icon: null }]);
+
+function categoriesForMode(mode) {
+  return mode === 'nation' ? NATION_CATEGORIES : ELEMENT_CATEGORIES;
+}
+function imageDataForMode(mode) {
+  if (mode === 'nation') {
+    return genshinChars.map(c => ({ src: c.icon, category: c.nation || 'another' }));
+  }
+  return genshinChars
     .filter(c => c.element !== null)
     .map(c => ({ src: c.icon, category: c.element }));
+}
+
+const RANK_MODE_KEY = 'genshinRankingMode';
+function loadRankMode() {
+  return localStorage.getItem(RANK_MODE_KEY) === 'nation' ? 'nation' : 'element';
+}
+function saveRankMode(mode) {
+  localStorage.setItem(RANK_MODE_KEY, mode);
+}
+
 const MAX_SELECTION = 3;
 const SELECTED_LABEL = '☑';
 const SITE_ID = 'genshinRanking';
@@ -189,6 +232,8 @@ const i18n = {
     bakatare: "ばかたれモード",
     mobileHint: "※スマホの人は横画面推奨",
     savedImageToggle: "前回保存した画像を確認",
+    modeElement: "元素別",
+    modeNation: "国別",
     hi: "炎",
     mizu: "水",
     koori: "氷",
@@ -196,6 +241,16 @@ const i18n = {
     kusa: "草",
     kaze: "風",
     iwa: "岩",
+    Mondstadt: "モンド",
+    Liyue: "璃月",
+    Inazuma: "稲妻",
+    Sumeru: "スメール",
+    Fontaine: "フォンテーヌ",
+    Natlan: "ナタ",
+    Snezhnaya: "スネージナヤ",
+    NodKrai: "ノド＝クライ",
+    another: "その他",
+    nationLockedNotice: '国別ランキングは「うーこポイント交換所」で解放できます（50UP）。タブは見られますが、解放するまでキャラ画像は選択できません。<a href="https://uko05.github.io/08_UPoint/" target="_blank" rel="noopener">交換所はこちら</a>',
   },
   en: {
     title: "Genshin Oshi Character Ranking",
@@ -205,6 +260,8 @@ const i18n = {
     bakatare: "Bakatare Mode",
     mobileHint: "*For mobile, landscape mode recommended",
     savedImageToggle: "Check last saved image",
+    modeElement: "By Element",
+    modeNation: "By Nation",
     hi: "Pyro",
     mizu: "Hydro",
     koori: "Cryo",
@@ -212,8 +269,26 @@ const i18n = {
     kusa: "Dendro",
     kaze: "Anemo",
     iwa: "Geo",
+    Mondstadt: "Mondstadt",
+    Liyue: "Liyue",
+    Inazuma: "Inazuma",
+    Sumeru: "Sumeru",
+    Fontaine: "Fontaine",
+    Natlan: "Natlan",
+    Snezhnaya: "Snezhnaya",
+    NodKrai: "Nod-Krai",
+    another: "Other",
+    nationLockedNotice: 'The "By Nation" ranking can be unlocked on the Uko Point Exchange (50 UP). You can view the tab, but character images can\'t be selected until it\'s unlocked. <a href="https://uko05.github.io/08_UPoint/" target="_blank" rel="noopener">Go to Exchange</a>',
   }
 };
+
+// 現在の言語での表示ラベルを取得(要素作成時に即座に正しい言語で出すため。
+// 言語切替自体はapplyLang()がdata-i18n属性を見て別途反映する)
+function t(key) {
+  const lang = document.querySelector('input[name="lang"]:checked')?.value || localStorage.getItem('lang') || 'ja';
+  const dict = i18n[lang] || i18n.ja;
+  return dict[key] != null ? dict[key] : key;
+}
 
 // ===== i18n適用 =====
 function applyLang(lang) {
@@ -265,9 +340,22 @@ function updateTabSelectionsDisplay() {
 }
 
 function loadImages() {
-    const tabs = document.querySelectorAll('.tab-label');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const cells = document.querySelectorAll('.cell');
+    let currentRankMode = loadRankMode();
+    let categories = categoriesForMode(currentRankMode);
+    let imageData = imageDataForMode(currentRankMode);
+    let columnMapping = {};
+    let cells = [];
+    let tabs = [];
+    let tabContents = [];
+
+    // localStorageに保存されたモードに、切替ボタンの見た目(active)を合わせておく
+    document.querySelectorAll('.rank-mode-tab-btn').forEach((b) => {
+        b.classList.toggle('active', b.dataset.mode === currentRankMode);
+    });
+
+    const grid = document.getElementById('grid');
+    const gridLabel = grid.querySelector('.sad_label_migi');
+    const tabWrap = document.getElementById('tab-wrap');
     const modeC = document.getElementById('modeC');
     let modeCEnabled = false;
 
@@ -295,6 +383,111 @@ function loadImages() {
         });
     }
 
+    // ===== 上部プレビューの列見出し・セルを、現在のモードのカテゴリ数に合わせて作り直す =====
+    function buildGrid() {
+        grid.querySelectorAll('.header, .cell').forEach(el => el.remove());
+        const n = categories.length;
+        grid.style.setProperty('--grid-cols', n);
+        if (gridLabel) gridLabel.style.width = `${n * 100}px`;
+
+        categories.forEach(cat => {
+            const header = document.createElement('div');
+            header.className = 'header';
+            if (cat.icon) {
+                header.innerHTML = `<img src="${cat.icon}" alt="${cat.key}">`;
+            } else {
+                header.classList.add('header-text');
+                header.dataset.i18n = cat.key;
+                header.textContent = t(cat.key);
+            }
+            grid.insertBefore(header, gridLabel);
+        });
+        for (let i = 0; i < n * 3; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.position = String(i);
+            grid.insertBefore(cell, gridLabel);
+        }
+        cells = Array.from(grid.querySelectorAll('.cell'));
+    }
+
+    // ===== タブ(元素/国ごとの一覧)を、現在のモードのカテゴリに合わせて作り直す =====
+    function buildTabs() {
+        tabWrap.innerHTML = '';
+        categories.forEach((cat, i) => {
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'TAB';
+            radio.className = 'tab-switch';
+            radio.id = `TAB-${i}`;
+            if (i === 0) radio.checked = true;
+
+            const label = document.createElement('label');
+            label.className = 'tab-label';
+            label.setAttribute('for', radio.id);
+            label.dataset.category = cat.key;
+            label.dataset.i18n = cat.key;
+            label.textContent = t(cat.key);
+
+            const content = document.createElement('div');
+            content.className = 'tab-content';
+            content.innerHTML = '<div class="image-list"></div>';
+
+            tabWrap.appendChild(radio);
+            tabWrap.appendChild(label);
+            tabWrap.appendChild(content);
+        });
+        tabs = Array.from(tabWrap.querySelectorAll('.tab-label'));
+        tabContents = Array.from(tabWrap.querySelectorAll('.tab-content'));
+    }
+
+    function rebuildColumnMapping() {
+        columnMapping = {};
+        const n = categories.length;
+        categories.forEach((cat, i) => {
+            columnMapping[cat.key] = [i, i + n, i + n * 2];
+        });
+    }
+
+    function attachTabHandlers() {
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const category = tab.dataset.category;
+
+                // すでにアクティブなタブを再度クリックした場合、何もしない
+                if (tab.classList.contains('active')) {
+                    return;
+                }
+                // アクティブなタブを更新
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // 現在のタブコンテンツを表示
+                tabContents.forEach(content => {
+                    if (content.previousElementSibling === tab) {
+                        updateImageList(category, content.querySelector('.image-list'));
+                        if (!modeCEnabled) {
+                            restoreSelectionState(category); // 選択状態の復元
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    // ===== モード切替・初期表示時に、グリッド/タブ/選択状態を丸ごと作り直す =====
+    function render() {
+        categories = categoriesForMode(currentRankMode);
+        imageData = imageDataForMode(currentRankMode);
+        buildGrid();
+        buildTabs();
+        rebuildColumnMapping();
+        attachTabHandlers();
+        for (const key of Object.keys(tabSelections)) delete tabSelections[key];
+        updateTabSelectionsDisplay();
+        if (tabs[0]) tabs[0].click();
+    }
+
     // C切替：ONでもOFFでも必ず全クリア（復元なし）
     if (modeC) {
         modeC.addEventListener('change', () => {
@@ -303,35 +496,50 @@ function loadImages() {
         });
     }
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const category = tab.dataset.category;
-            
-            // すでにアクティブなタブを再度クリックした場合、何もしない
-            if (tab.classList.contains('active')) {
-                return; 
-            }
-            // アクティブなタブを更新
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            // 現在のタブコンテンツを表示
-            tabContents.forEach(content => {
-                if (content.previousElementSibling === tab) {
-                    updateImageList(category, content.querySelector('.image-list'));
-                    if (!modeCEnabled) {
-                        restoreSelectionState(category); // 選択状態の復元
-                    }
-                }
-            });
+    // モード切替(元素別/国別)：選択状態はモードをまたいで維持できないため全クリアして作り直す
+    document.querySelectorAll('.rank-mode-tab-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+            const mode = btn.dataset.mode === 'nation' ? 'nation' : 'element';
+            if (mode === currentRankMode) return;
+            document.querySelectorAll('.rank-mode-tab-btn').forEach((b) => b.classList.toggle('active', b === btn));
+            currentRankMode = mode;
+            saveRankMode(currentRankMode);
+            // 国別に切り替える時は、解放状態の取得(非同期)を待ってから描画する
+            if (currentRankMode === 'nation') await nationRankingUnlockedReady;
+            render();
         });
     });
 
-    // 初期表示（最初のタブをアクティブにする）
-    tabs[0].click();
+    // 言語切替：ロックの案内文(rank-locked-notice)はリンクを含むHTMLなのでdata-i18nの
+    // textContent置き換えでは対応できない。現在表示中のタブを作り直して反映する
+    // (applyLang()自体はdata-i18n付きのタブラベル・列見出しテキストを別途更新済み)。
+    document.querySelectorAll('input[name="lang"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            const activeTab = document.querySelector('.tab-label.active');
+            if (!activeTab) return;
+            const content = tabContents.find(c => c.previousElementSibling === activeTab);
+            if (!content) return;
+            updateImageList(activeTab.dataset.category, content.querySelector('.image-list'));
+            if (!modeCEnabled) restoreSelectionState(activeTab.dataset.category);
+        });
+    });
+
+    (async () => {
+        if (currentRankMode === 'nation') await nationRankingUnlockedReady;
+        render();
+    })();
 
     function updateImageList(category, container) {
         container.innerHTML = '';
+
+        const locked = currentRankMode === 'nation' && !nationRankingUnlocked;
+        if (locked) {
+            const notice = document.createElement('div');
+            notice.className = 'rank-locked-notice';
+            notice.innerHTML = t('nationLockedNotice');
+            container.appendChild(notice);
+        }
+
         const filteredImages = imageData.filter(img => img.category === category);
 
         filteredImages.forEach(imgData => {
@@ -343,6 +551,7 @@ function loadImages() {
             img.dataset.src = imgData.src;
             img.dataset.category = imgData.category;
             img.classList.add('image-item');
+            if (locked) img.classList.add('locked');
             img.addEventListener('click', () => handleImageClick(img, category));
 
             imgContainer.appendChild(img);
@@ -351,8 +560,12 @@ function loadImages() {
     }
 
     function handleImageClick(img, category) {
+        // 国別ランキングが未解放の間はキャラ画像をクリックしても反応しない
+        // (タブ自体・一覧表示は解放前でも見られる)
+        if (currentRankMode === 'nation' && !nationRankingUnlocked) return;
+
         const src = img.dataset.src;
-        
+
         // --- Cモード：単一選択＆全セル埋め ---
         if (modeCEnabled) {
             // 前の選択は全部消す（自分で外す必要なし）
@@ -366,16 +579,6 @@ function loadImages() {
             fillAllCells(src);
             return; // ★ここで既存処理を完全に止める
         }
-
-        const columnMapping = {
-            'hi': [0, 7, 14],
-            'mizu': [1, 8, 15],
-            'koori': [2, 9, 16],
-            'kaminari': [3, 10, 17],
-            'kusa': [4, 11, 18],
-            'kaze': [5, 12, 19],
-            'iwa': [6, 13, 20]
-        };
 
         const positions = columnMapping[category] || [];
         const isSelected = img.classList.contains('selected');
@@ -465,18 +668,7 @@ function loadImages() {
     }
 
     function updateImageNumbers(tabCategory) {
-        const columnMapping = {
-            'hi': [0, 7, 14],
-            'mizu': [1, 8, 15],
-            'koori': [2, 9, 16],
-            'kaminari': [3, 10, 17],
-            'kusa': [4, 11, 18],
-            'kaze': [5, 12, 19],
-            'iwa': [6, 13, 20]
-        };
-
         const selectedCategory = tabSelections[tabCategory] || [];
-        const positions = columnMapping[tabCategory] || [];
 
         selectedCategory.forEach((src, index) => {
             const imgContainer = document.querySelector(`.image-item[data-src="${src}"]`).parentElement;
@@ -485,16 +677,6 @@ function loadImages() {
     }
 
     function repositionImages(tabCategory) {
-        const columnMapping = {
-            'hi': [0, 7, 14],
-            'mizu': [1, 8, 15],
-            'koori': [2, 9, 16],
-            'kaminari': [3, 10, 17],
-            'kusa': [4, 11, 18],
-            'kaze': [5, 12, 19],
-            'iwa': [6, 13, 20]
-        };
-
         const selectedCategory = tabSelections[tabCategory] || [];
         const positions = columnMapping[tabCategory] || [];
 
@@ -510,7 +692,6 @@ function loadImages() {
             img.classList.add('selected');
             const cellIndex = positions[index];
             if (cellIndex !== undefined) {
-                console.log(`Placing image ${src} at position ${cellIndex}`);
                 cells[cellIndex].innerHTML = '';
                 cells[cellIndex].appendChild(img);
             }
@@ -522,15 +703,6 @@ function loadImages() {
 
     function restoreSelectionState(category) {
         const selectedCategory = tabSelections[category] || [];
-        const columnMapping = {
-            'hi': [0, 7, 14],
-            'mizu': [1, 8, 15],
-            'koori': [2, 9, 16],
-            'kaminari': [3, 10, 17],
-            'kusa': [4, 11, 18],
-            'kaze': [5, 12, 19],
-            'iwa': [6, 13, 20]
-        };
         const positions = columnMapping[category] || [];
 
         // 他のタブをクリアせずに、選択状態を復元
@@ -562,7 +734,6 @@ function loadImages() {
     const saveButton = document.getElementById('save-button');
     if (saveButton) {
         saveButton.addEventListener('click', () => {
-            const tabCategory = document.querySelector('.tab-label.active').dataset.category;
             saveImage();
         });
     }

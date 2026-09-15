@@ -68,13 +68,77 @@ h1 {
 
 .container {
     display: grid;
-    grid-template-columns: repeat(7, 100px); /* 7列 */
+    /* --grid-cols は script.js が現在のモード(元素別=7列/国別=9列)に合わせて設定する */
+    grid-template-columns: repeat(var(--grid-cols, 7), 100px);
     grid-template-rows: auto repeat(3, 100px); /* 1行目自動調整 + 3行 */
     gap: 0; /* 隙間なし */
     justify-content: center;
     margin: 10px auto;
     padding: 10px 20px 5px 20px;
-    max-width: 700px;
+    max-width: 900px;
+}
+
+.header.header-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: bold;
+    text-align: center;
+    color: #555;
+}
+
+/* 22_PlayMaker の main-mode-tab-bar と同じ見た目・幅(横いっぱい)のタブに合わせている */
+.rank-mode-tab-bar {
+    display: flex;
+    width: 100%;
+    margin: 0 0 10px;
+    background: #ffffff;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+}
+.rank-mode-tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: #888888;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    text-align: center;
+}
+.rank-mode-tab-btn:hover {
+    color: #333333;
+}
+.rank-mode-tab-btn.active {
+    color: #333333;
+    border-bottom-color: #ffcc00;
+    background: rgba(255, 204, 0, 0.18);
+    font-weight: bold;
+}
+
+.rank-locked-notice {
+    width: 100%;
+    background: #fff3cd;
+    border: 1px solid #ffe69c;
+    color: #664d03;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+.rank-locked-notice a {
+    color: #664d03;
+    font-weight: bold;
+}
+
+.image-list img.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 header {
@@ -266,6 +330,7 @@ body.mode-c .something {
     border-radius: 8px; /* 角を少し丸くする */
     cursor: pointer; /* ポインターを表示 */
     transition: background-color 0.3s ease, border-color 0.3s ease; /* ホバー時のスムーズな変化 */
+    margin-bottom: 16px; /* 直下のタブ切り替えと近すぎないように */
 }
 
 #save-button:hover {
@@ -297,7 +362,7 @@ body.mode-c .something {
 /* スマホの縦画面表示に対応 768px */
 @media only screen and (max-width: 932px) {
     .container {
-        grid-template-columns: repeat(7, minmax(100px, 1fr)); /* 各列を100px固定 */
+        grid-template-columns: repeat(var(--grid-cols, 7), minmax(100px, 1fr));
         overflow-x: auto; /* 横スクロールを有効化 */
         justify-content: start; /* スクロール位置を左に固定 */
     }
