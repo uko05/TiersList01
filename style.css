@@ -257,6 +257,15 @@ header {
     border-radius: 5px 5px 0 0;
     flex: 1;
     box-sizing: border-box; /* ボックスサイズを含める */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-label img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
 }
 
 .tab-wrap:after {

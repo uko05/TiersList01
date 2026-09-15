@@ -108,12 +108,23 @@ const NATION_ICON_BASE = 'https://cdn.jsdelivr.net/gh/uko05/99_SharedImage@main/
 
 // ===== ランキングモード(元素別/国別)ごとのタブ構成 =====
 // キーはgenshinChars側のelement/nationの値と対応させる。国別はnation未設定キャラの
-// 受け皿として"another"(画像なし・ラベルのみ)を末尾に足す。
+// 受け皿として"another"(画像なし・ラベルのみ)を先頭に置く。
+// colorは各国のイメージ元素に合わせた背景色(上部プレビューの列見出しセルに使う)。
 const ELEMENT_CATEGORIES = ['hi', 'mizu', 'koori', 'kaminari', 'kusa', 'kaze', 'iwa']
   .map(key => ({ key, icon: `${GENSO_ICON_BASE}${key}.png` }));
-const NATION_CATEGORIES = ['Mondstadt', 'Liyue', 'Inazuma', 'Sumeru', 'Fontaine', 'Natlan', 'Snezhnaya', 'NodKrai']
-  .map(key => ({ key, icon: `${NATION_ICON_BASE}${key}.png` }))
-  .concat([{ key: 'another', icon: null }]);
+const NATION_COLORS = {
+  Mondstadt: '#6fd3b0', // 風(Anemo)
+  Liyue:     '#a97c3f', // 岩(Geo) 茶色
+  Inazuma:   '#a266d4', // 雷(Electro)
+  Sumeru:    '#8bc63e', // 草(Dendro)
+  Fontaine:  '#3fa7e1', // 水(Hydro)
+  Natlan:    '#eb6420', // 炎(Pyro)
+  Snezhnaya: '#7fdbf5', // 氷(Cryo)
+  NodKrai:   '#7a8fa6', // 未判明(氷雪の地のイメージでグレー系)
+};
+const NATION_CATEGORIES = [{ key: 'another', icon: null, color: null }]
+  .concat(['Mondstadt', 'Liyue', 'Inazuma', 'Sumeru', 'Fontaine', 'Natlan', 'Snezhnaya', 'NodKrai']
+    .map(key => ({ key, icon: `${NATION_ICON_BASE}${key}.png`, color: NATION_COLORS[key] })));
 
 function categoriesForMode(mode) {
   return mode === 'nation' ? NATION_CATEGORIES : ELEMENT_CATEGORIES;
@@ -393,6 +404,7 @@ function loadImages() {
         categories.forEach(cat => {
             const header = document.createElement('div');
             header.className = 'header';
+            if (cat.color) header.style.backgroundColor = cat.color;
             if (cat.icon) {
                 header.innerHTML = `<img src="${cat.icon}" alt="${cat.key}">`;
             } else {
@@ -426,8 +438,15 @@ function loadImages() {
             label.className = 'tab-label';
             label.setAttribute('for', radio.id);
             label.dataset.category = cat.key;
-            label.dataset.i18n = cat.key;
-            label.textContent = t(cat.key);
+            label.title = t(cat.key);
+            if (cat.icon) {
+                // アイコン画像を使う場合はdata-i18nを付けない(applyLang()のtextContent
+                // 置換で画像が消えてしまうため。ホバー時のtitleだけ翻訳対象外として残る)
+                label.innerHTML = `<img src="${cat.icon}" alt="${t(cat.key)}">`;
+            } else {
+                label.dataset.i18n = cat.key;
+                label.textContent = t(cat.key);
+            }
 
             const content = document.createElement('div');
             content.className = 'tab-content';
