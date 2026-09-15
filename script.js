@@ -260,7 +260,7 @@ const i18n = {
     Natlan: "ナタ",
     Snezhnaya: "スネージナヤ",
     NodKrai: "ノド＝クライ",
-    another: "その他",
+    another: "Other",
     nationLockedNotice: '国別ランキングは「うーこポイント交換所」で解放できます（50UP）。タブは見られますが、解放するまでキャラ画像は選択できません。<a href="https://uko05.github.io/08_UPoint/" target="_blank" rel="noopener">交換所はこちら</a>',
   },
   en: {
