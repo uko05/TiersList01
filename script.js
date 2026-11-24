@@ -775,10 +775,10 @@ function saveImage() {
   const px = v => parseFloat(v) || 0;
   const colsWidth = gcs.gridTemplateColumns.split(' ').reduce((sum, v) => sum + px(v), 0)
     + px(gcs.columnGap) * Math.max(0, gcs.gridTemplateColumns.split(' ').length - 1);
-  const fullWidth = Math.ceil(Math.max(
-    grid.scrollWidth,
-    colsWidth + px(gcs.paddingLeft) + px(gcs.paddingRight) + px(gcs.borderLeftWidth) + px(gcs.borderRightWidth)
-  ));
+  // PCでは表の枠(最大900px)が7列(700px)より広く、そのまま撮ると左右に大きな空白ができるため、
+  // 列の幅+左右の余白ちょうどで撮る(列の幅が取れないときだけ今の横幅を使う)
+  const contentWidth = colsWidth + px(gcs.paddingLeft) + px(gcs.paddingRight) + px(gcs.borderLeftWidth) + px(gcs.borderRightWidth);
+  const fullWidth = Math.ceil(colsWidth > 0 ? contentWidth : grid.scrollWidth);
   html2canvas(grid, {
     useCORS: true, scale: 2,
     // 撮影用の画面幅が今の画面より狭いとスマホ用の見た目(左右の余白が違う)に切り替わるため、今の画面幅より狭くしない
